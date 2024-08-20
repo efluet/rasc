@@ -1,0 +1,137 @@
+# zonal stats of GLWDv2 and SOC grid from soil grids
+
+
+library(exactextractr)
+library(terra)
+library(sf)
+library(tidyverse)
+library(here)
+here()
+
+
+### DOWNLOAD BULKDENSITY
+
+# Organic carbon concentration SOC g/kg dg/kg Gravimetric content of organic carbon in the fine earth fraction of the soil
+
+
+soc <- rast('../output/results/soilgrids2/soc_0-30cm_mean_500m.tif')
+
+
+# /-----------------------------------------------------------------------------
+#/
+
+get_soc_perclass <- function(class_string){
+  
+  # Get GLWDv2
+  fname <- paste0('../output/results/glwdv2/GLWD_v2_delta_GWO_class_', class_string,'_ha_x10.tif')
+  glwdv2 <- rast(fname)
+  
+  # Get pixel area
+  pixarea_x10ha <- cellSize(glwdv2, unit='ha')*10
+  
+  # Convert to percentage
+  glwdv2_prc <- glwdv2 / pixarea_x10ha
+  glwdv2_prc[glwdv2_prc > 1] <- 1
+  
+  
+  # Set threshold to sample SOC per class
+  # Remove pixels lower than threshold
+  # this way no two pixels can have the same value
+  glwdv2_prc[glwdv2_prc <= 0.5] <- NA
+  
+  
+  # Apply GLWDv2 mask to SOC raster
+  soc[is.na(glwdv2_prc)] <- NA
+  
+  
+  ext1 <- ext(-180, 0, -56, 84)
+  ext2 <- ext(0, 180, -56, 84)
+  
+  
+  soc1 <- crop(soc, ext1, snap="near", extend=FALSE)
+  soc2 <- crop(soc, ext2, snap="near", extend=FALSE)
+  
+  
+  soc1_class_df<- as.data.frame(soc1, na.rm=T)
+  soc2_class_df<- as.data.frame(soc2, na.rm=T)
+  
+  
+  soc_class_df <- bind_rows(soc1_class_df, soc2_class_df)
+  soc_class_df$gwo_class <- as.numeric(class_string)
+  
+  return(soc_class_df)
+  }
+
+
+# /-----------------------------------------------------------------------------
+#/
+
+gwo_class_list <- c('01','02')#,'03','04','05','06','07','08','09','16','19')
+
+soc_df <- data.frame()
+  
+# Loop
+for (c in gwo_class_list){
+  
+  print(c)
+  soc_df <- bind_rows(soc_df,
+                      get_soc_perclass(c))
+  
+  
+  }
+
+names(soc_df) <- c('soc_0_30cm_mean','gwo_class_num')
+
+# Write to file
+write.csv(soc_df, '../output/results/soilgrids2/soc_0-30cm_mean_perclass.csv')
+
+
+
+
+
+# /-----------------------------------------------------------------------------
+#/ 
+
+
+# Summarize SOC values per class
+soc_df_perclass <- 
+  soc_df %>% 
+  group_by(gwo_class_num) %>% 
+  summarise_all(.funs=list(soc_0_30cm_min = min, soc_0_30cm_mean=mean, soc_0_30cm_max = max))
+
+
+#  Join the GWO class # and name
+gwo_area <- read.csv('../output/results/gwo/gwo_class_area_wnames.csv')
+
+
+df <- left_join(soc_df_perclass, gwo_area, by='gwo_class_num') %>% 
+      mutate(soc_tot = soc_0_30cm_mean * area_Mkm2)
+df
+  
+
+# /-----------------------------------------------------------------------------
+#/  FIGURES
+
+# Get theme
+source('plot_themes.r')
+
+
+# Barplot of area per GWO class
+ggplot()+
+  geom_bar(data=df, aes(x=gwo_class_name, y=area_Mkm2), stat='identity') +
+  coord_flip() +
+  xlab('') +
+  line_plot_theme
+
+# Boxplot of SOC raters per GWO class
+ggplot()+
+  geom_boxplot(data=soc_df, aes(x=gwo_class, y=value)) +
+  line_plot_theme
+
+# Barplot of total carbon per GWO class
+ggplot()+
+  geom_boxplot(data=soc_df, aes(x=gwo_class, y=value)) +
+  line_plot_theme
+
+
+

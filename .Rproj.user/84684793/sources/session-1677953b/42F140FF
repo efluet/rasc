@@ -1,0 +1,26 @@
+{
+    "id": "42F140FF",
+    "path": "~/Library/CloudStorage/OneDrive-PNNL/Documents/projects/rasc/scripts/data_proc/zstats_soc.r",
+    "project_path": "data_proc/zstats_soc.r",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1724175823758.0,
+    "source_on_save": false,
+    "relative_order": 2,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "80,2",
+        "scrollLine": "6"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1724183668,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1724183668934,
+    "read_only": false,
+    "read_only_alternatives": []
+}
