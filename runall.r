@@ -6,6 +6,8 @@ library(exactextractr)
 library(terra)
 library(sf)
 library(tidyverse)
+library(see)
+
 library(here)
 here()
 

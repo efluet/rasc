@@ -1,0 +1,29 @@
+{
+    "id": "8326AB09",
+    "path": "~/Library/CloudStorage/OneDrive-PNNL/Documents/projects/rasc/scripts/plots/barplot_soc_perclass.r",
+    "project_path": "plots/barplot_soc_perclass.r",
+    "type": "r_source",
+    "hash": "4048560308",
+    "contents": "",
+    "dirty": false,
+    "created": 1724123154609.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "182,0",
+        "scrollLine": "103",
+        "docOutlineVisible": "1",
+        "docOutlineSize": "240"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1724200583,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1724200583795,
+    "read_only": false,
+    "read_only_alternatives": []
+}
